@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu - FoodieFlex</title>
+    <link href="/styles/output.css" rel="stylesheet" />
+    <style>
+      @keyframes slideInFadeOut {
+        0% {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        10%,
+        90% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+      }
+
+      .animate-slide-in {
+        animation: slideInFadeOut 4s ease-in-out forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <% [...(ToastMessage || []), ...(errors || [])].forEach(msg => { %>
+    <p
+      class="<%= errors?.includes(msg) ? 'bg-red-100 border-red-500 text-red-800' : 'bg-green-100 border-green-500 text-green-800' %> border-l-4 animate-slide-in px-4 py-2 shadow-md"
+      id="toast"
+    >
+      <%= msg %>
+    </p>
+    <% }) %> <%- include("partials/header") %>
+
+    <div
+      class="relative text-white min-h-screen flex items-center justify-center"
+    >
+      <div
+        class="absolute inset-0 z-0 bg-[url('/assets/login.webp')] bg-cover bg-center blur-lg"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"
+        ></div>
+      </div>
+
+      <div class="contentBox z-20 relative p-4 lg:px-50 w-full">
+        <h2 class="text-center text-3xl mt-20 mb-20 font-bold">
+          Choose your Meal/Fast Food/Dessert/Drink
+        </h2>
+
+        <ul class="grid gap-10 sm:grid-cols-2 md:grid-cols-3 mb-5">
+          <% items.forEach(item => { %>
+          <li
+            class="bg-black/20 p-4 rounded-md shadow hover:shadow-white overflow-hidden transition-all"
+          >
+            <img
+              src="/assets/<%= item.imageUrl %>"
+              alt="<%= item.itemName %>"
+              class="w-full h-40 object-cover rounded-md mb-3 transform transition-transform duration-500 ease-in-out hover:scale-105"
+            />
+            <div class="CardContent flex flex-col gap-1.5">
+              <h3 class="text-xl font-semibold"><%= item.itemName %></h3>
+              <p class="text-sm text-green-200">Price: ₹<%= item.price %></p>
+              <p class="text-sm mt-1 text-gray-300"><%= item.description %></p>
+              <p class="text-sm text-green-200">
+                Category: <%= item.category.charAt(0).toUpperCase() +
+                item.category.slice(1) %>
+              </p>
+              <p class="text-xs text-yellow-400">
+                <%= item.available ? "Available" : "Out of stock" %>
+              </p>
+            </div>
+            <% if (item.available) { %>
+            <button
+              onclick="handleToggle('<%= item._id %>', '<%= item.imageUrl %>', '<%= item.itemName %>')"
+              class="group relative overflow-hidden mt-5 px-6 py-2 font-semibold text-white border rounded-r-2xl cursor-pointer transition-all duration-300"
+            >
+              <span
+                class="absolute inset-0 w-full h-full bg-gradient-to-r from-orange-400 to-red-600 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 ease-out opacity-80"
+              ></span>
+              <span class="relative z-10">Order</span>
+            </button>
+
+            <% } %>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div
+      id="orderModal"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 hidden"
+    >
+      <div
+        class="bg-white text-black p-6 rounded-xl w-full max-w-md shadow-lg relative"
+      >
+        <!-- Image & Title -->
+        <img
+          id="modalImage"
+          src=""
+          alt="Food Item"
+          class="w-full h-48 object-cover rounded-md mb-4"
+        />
+        <h2 id="modalTitle" class="text-2xl font-bold text-orange-600 mb-4">
+          Item Name
+        </h2>
+
+        <!-- Order Form -->
+        <!-- Order Form -->
+        <form method="POST" action="/book">
+          <input
+            type="hidden"
+            name="items[0][itemId]"
+            id="modalItemId"
+            value=""
+          />
+          <input type="hidden" name="redirectTo" value="/menu" />
+
+          <label class="block mb-2 text-gray-600">Quantity:</label>
+          <input
+            type="number"
+            name="items[0][quantity]"
+            min="1"
+            max="5"
+            value="1"
+            class="w-full mb-3 border rounded px-3 py-2"
+          />
+
+          <label class="block mb-2 text-gray-600">Delivery Address:</label>
+          <input
+            type="text"
+            name="deliveryAddress"
+            placeholder="Enter delivery address"
+            class="w-full mb-4 border rounded px-3 py-2"
+          />
+
+          <button
+            type="submit"
+            class="group relative overflow-hidden px-6 py-2 font-semibold text-black border rounded-md cursor-pointer shadow-md hover:shadow-blue-500 hover:text-white transition-all duration-300"
+          >
+            <span
+              class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400 to-green-700 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 ease-out opacity-80"
+            ></span>
+            <span class="relative z-10">Order</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <%- include("partials/footer") %>
+
+    <script>
+      const handleToggle = (itemId, imageUrl, itemName) => {
+        document.getElementById("modalItemId").value = itemId;
+        document.getElementById("modalImage").src = `/assets/${imageUrl}`;
+        document.getElementById("modalImage").alt = itemName;
+        document.getElementById("modalTitle").textContent = itemName;
+
+        document.getElementById("orderModal").classList.remove("hidden");
+      };
+
+      const closeModal = () => {
+        document.getElementById("orderModal").classList.add("hidden");
+      };
+
+      // Optional: Close when clicking outside the modal
+      window.addEventListener("click", (e) => {
+        const modal = document.getElementById("orderModal");
+        if (e.target === modal) closeModal();
+      });
+      setTimeout(() => {
+        const toasts = document.querySelectorAll("#toast");
+        toasts.forEach((toast) => toast.remove());
+      }, 2100);
+    </script>
+  </body>
+</html>

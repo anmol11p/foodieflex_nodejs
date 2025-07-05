@@ -1,0 +1,77 @@
+<header
+  class="bg-gradient-to-r from-black/40 via-green-900/40 to-black/20 text-white fixed w-full z-30 shadow-md backdrop-blur-sm"
+>
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-green-300">🍴 MealBook</h1>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex space-x-6 text-sm sm:text-base">
+      <a href="/" class="hover:text-green-300">Home</a>
+      <a href="/menu" class="hover:text-green-300">Menu</a>
+      <a href="/orders" class="hover:text-green-300">My Orders</a>
+
+      <% if (!user) { %>
+      <a href="/login" class="hover:text-green-300">Login</a>
+      <a href="/signup" class="hover:text-green-300">Signup</a>
+      <% } else { %>
+      <form method="POST" action="/auth/logout">
+        <button type="submit" class="hover:text-red-400">Logout</button>
+      </form>
+      <% } %>
+    </nav>
+
+    <!-- Mobile Hamburger Button -->
+    <div class="md:hidden">
+      <button id="menuToggleBtn" aria-label="Toggle Menu">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="text-white w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div
+    id="mobileMenu"
+    class="absolute top-full left-0 right-0 hidden md:hidden bg-black/80 shadow-md backdrop-blur-sm px-4 pb-4 pt-2 text-white flex flex-col gap-3 text-base transition-all duration-300 ease-in-out z-20"
+  >
+    <a href="/" class="hover:text-green-300">Home</a>
+    <a href="/menu" class="hover:text-green-300">Menu</a>
+    <a href="/orders" class="hover:text-green-300">My Orders</a>
+
+    <% if (!user) { %>
+    <a href="/login" class="hover:text-green-300">Login</a>
+    <a href="/signup" class="hover:text-green-300">Signup</a>
+    <% } else { %>
+    <form method="POST" action="/auth/logout">
+      <button type="submit" class="hover:text-red-400 text-left">Logout</button>
+    </form>
+    <% } %>
+  </div>
+</header>
+
+<!-- JavaScript to toggle mobile menu -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("menuToggleBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (toggleBtn && mobileMenu) {
+      toggleBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+    }
+  });
+</script>

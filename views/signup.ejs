@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>signup</title>
+    <link href="/styles/output.css" rel="stylesheet" />
+  </head>
+  <body>
+    <%- include("partials/header")%>
+    <div
+      class="text-white min-h-screen flex items-center justify-center relative"
+    >
+      <!-- Background  -->
+      <div
+        class="absolute inset-0 z-0 bg-[url('/assets/registrationImg.webp')] bg-cover bg-center"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 backdrop-blur-lg"
+        ></div>
+      </div>
+      <div
+        class="relative z-20 p-6 sm:w-[400px] rounded-2xl border border-green-200 shadow-lg shadow-green-700/40 overflow-hidden"
+      >
+        <form
+          class="flex flex-col gap-5 z-20 relative"
+          action="/auth/signup"
+          method="post"
+        >
+          <h2 class="text-2xl font-bold text-center mb-2">Create an Account</h2>
+
+          <!-- Full Name  -->
+          <div>
+            <label htmlFor="name" class="block text-sm mb-1"> Full Name </label>
+            <input
+              type="text"
+              name="fullname"
+              id="name"
+              autoComplete="off"
+              placeholder="John Doe"
+              class="w-full p-2 text-white border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
+            />
+          </div>
+
+          <!-- Phone  -->
+          <div>
+            <label htmlFor="phone" class="block text-sm mb-1">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              id="phone"
+              autoComplete="off"
+              placeholder="9876543210"
+              class="w-full p-2 text-white border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
+            />
+          </div>
+
+          <!-- Email  -->
+          <div>
+            <label htmlFor="email" class="block text-sm mb-1"> Email </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              autoComplete="off"
+              placeholder="you@example.com"
+              class="w-full p-2 text-white border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
+            />
+          </div>
+
+          <!-- Password  -->
+          <div class="relative">
+            <label htmlFor="password" class="block text-sm mb-1">
+              Password
+            </label>
+            <input
+              name="password"
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              autoComplete="off"
+              class="w-full p-2 pr-10 text-white border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="group relative overflow-hidden px-6 py-2 font-semibold text-white border rounded-md cursor-pointer shadow-md hover:shadow-blue-500 transition-all duration-300"
+          >
+            <span
+              class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400 to-green-700 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 ease-out opacity-80"
+            ></span>
+            <span class="relative z-10">signup</span>
+          </button>
+
+          <p class="text-sm text-center mt-2">
+            Already have an account?
+            <a href="/login" class="text-green-400 hover:underline"> Login </a>
+          </p>
+          <% if (Array.isArray(errors) && errors.length > 0) { %>
+          <div id="flash-container">
+            <% errors.forEach((error) => { %>
+            <p
+              class="text-sm border-l-4 border-red-500 bg-white text-black py-2 pl-3 shadow-sm rounded-sm mb-2"
+            >
+              <%= error %>
+            </p>
+            <% }) %>
+          </div>
+          <% } %>
+        </form>
+      </div>
+    </div>
+
+    <%- include("partials/footer")%>
+    <script>
+      setTimeout(() => {
+        const flash = document.getElementById("flash-container");
+        if (flash) {
+          flash.style.transition = "opacity 0.5s ease";
+          flash.style.opacity = "0";
+          setTimeout(() => flash.remove(), 500);
+        }
+      }, 2000);
+    </script>
+  </body>
+</html>

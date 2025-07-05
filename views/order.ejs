@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My order - FoodieFlex</title>
+    <link href="/styles/output.css" rel="stylesheet" />
+    <style>
+      @keyframes slideInFadeOut {
+        0% {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        10%,
+        90% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+      }
+      .animate-slide-in {
+        animation: slideInFadeOut 4s ease-in-out forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <% [...(ToastMessage || []), ...(errors || [])].forEach(msg => { %>
+    <p
+      class="<%= errors?.includes(msg) ? 'bg-red-100 border-red-500 text-red-800' : 'bg-green-100 border-green-500 text-green-800' %> border-l-4 animate-slide-in px-4 py-2 shadow-md"
+      id="toast"
+    >
+      <%= msg %>
+    </p>
+    <% }) %> <%- include("partials/header") %>
+
+    <!-- Order History Section -->
+    <section class="py-10 px-4">
+      <h2 class="text-center font-bold text-3xl mb-8 text-orange-600 py-20">
+        Order History
+      </h2>
+
+      <% if (!orders || orders.length === 0) { %>
+      <p class="text-center text-lg font-medium">
+        No orders found.
+        <a href="/menu" class="text-red-400 underline">Go to order</a>
+      </p>
+      <% } else { %>
+      <ul
+        class="grid gap-10 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:px-40"
+      >
+        <% orders.forEach(order => { %>
+        <li
+          class="bg-white border-gray-200 rounded-lg shadow p-5 space-y-4 hover:shadow-xl transition-all duration-300 flex flex-col gap-2 mb-10 animate-fade-in"
+        >
+          <!-- Order Info -->
+          <div class="order-2 flex flex-col gap-1">
+            <h3 class="font-bold text-sm text-orange-600">
+              Order ID:
+              <span class="text-black"
+                ><%= order._id.toString().toUpperCase() %></span
+              >
+            </h3>
+            <p class="text-sm text-gray-600">
+              Placed on: <%= order.createdAt.toLocaleString() %>
+            </p>
+            <p class="text-sm text-gray-600 capitalize">
+              Status:
+              <span
+                class="font-semibold <%= order.status === 'cancelled' ? 'text-red-600' : order.status === 'delivered' ? 'text-green-600' : 'text-yellow-500' %>"
+              >
+                <%= order.status %>
+              </span>
+            </p>
+            <p class="text-sm font-light capitalize">
+              <span class="text-green-500">Address:</span> <%=
+              order.deliveryAddress %>
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between pt-5 animate-fade-in">
+              <% if (order.status !== 'cancelled' && order.status !==
+              'delivered') { %>
+              <form action="/book/cancel" method="post">
+                <input
+                  type="text"
+                  class="hidden"
+                  name="id"
+                  value="<%= order._id %>"
+                />
+                <button
+                  type="submit"
+                  class="cursor-pointer bg-red-300 text-white px-4 rounded-2xl hover:bg-red-700"
+                >
+                  Cancel
+                </button>
+              </form>
+              <% } %>
+
+              <button
+                class="cursor-pointer bg-transparent text-black/40 transition-all duration-200 px-4 border rounded-2xl hover:bg-red-700 hover:text-white"
+                onclick="handleToggle('<%= order.status %>')"
+              >
+                Track Order
+              </button>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div class="space-y-3 order-1">
+            <% order.items.forEach((subItem, idx) => { const item =
+            subItem.itemId; %>
+            <div class="flex gap-4 p-3">
+              <img
+                src="/assets/<%= item?.imageUrl %>"
+                alt="<%= item?.itemName %>"
+                class="w-24 h-24 object-cover rounded-md"
+              />
+              <div>
+                <h4 class="font-semibold text-orange-700 text-lg">
+                  <%= item?.itemName %>
+                </h4>
+                <p class="text-sm text-gray-600">
+                  Qty: <%= subItem.quantity %>
+                </p>
+                <p class="text-sm text-gray-600">
+                  Price: ₹<%= item?.price %> x <%= subItem.quantity %>
+                </p>
+                <p class="text-sm font-medium text-green-700">
+                  Subtotal: ₹<%= item?.price * subItem.quantity %>
+                </p>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+    </section>
+    <!-- modal of tracker -->
+    <div
+      class="fixed hidden inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center"
+      id="trackModal"
+    >
+      <div
+        class="bg-white/80 p-6 rounded-xl shadow-lg w-[90%] max-w-md relative animate-fade-in"
+      >
+        <!-- Content will be injected here -->
+      </div>
+    </div>
+    <%- include("partials/footer") %>
+
+    <script>
+      const handleToggle = (status) => {
+        const isCancelled = status === "cancelled";
+        const steps = isCancelled
+          ? ["placed", "preparing", "cancelled"]
+          : ["placed", "preparing", "delivered"];
+        const activeIndex = steps.indexOf(status);
+
+        // Clear existing content if any
+        const modal = document.getElementById("trackModal");
+        const modalBox = modal.querySelector("div.rounded-xl");
+        modalBox.innerHTML = `<h3 class="text-lg font-bold text-orange-600 mb-4 text-center">Track Order</h3>`;
+
+        const trackContainer = document.createElement("div");
+        trackContainer.classList.add(
+          "flex",
+          "flex-col",
+          "justify-between",
+          "items-center",
+          "gap-4"
+        );
+
+        steps.forEach((step, index) => {
+          const isActive = index <= activeIndex;
+          const isCancelledStep = step === "cancelled";
+
+          const stepDiv = document.createElement("div");
+          stepDiv.classList.add("flex", "flex-col", "items-center", "relative");
+
+          const circle = document.createElement("div");
+          circle.classList.add(
+            "w-10",
+            "h-10",
+            "rounded-full",
+            "flex",
+            "items-center",
+            "justify-center",
+            "font-bold",
+            "transition-all",
+            "duration-300"
+          );
+          if (isCancelledStep && isCancelled) {
+            circle.classList.add("bg-red-600", "text-white");
+          } else if (isActive) {
+            circle.classList.add("bg-green-500", "text-white");
+          } else {
+            circle.classList.add("bg-gray-300", "text-black");
+          }
+          circle.textContent = index + 1;
+
+          const label = document.createElement("p");
+          label.classList.add("text-xs", "mt-2", "capitalize", "text-center");
+          label.textContent = step;
+          if (isCancelledStep && isCancelled) {
+            label.classList.add("text-red-600", "font-semibold");
+          }
+
+          stepDiv.appendChild(circle);
+          stepDiv.appendChild(label);
+
+          // Line between steps (except last one)
+          if (index < steps.length - 1) {
+            const line = document.createElement("div");
+            line.classList.add("w-1", "h-8", "mt-1");
+            if (isCancelledStep && isCancelled) {
+              line.classList.add("bg-red-600");
+            } else if (isActive) {
+              line.classList.add("bg-green-500");
+            } else {
+              line.classList.add("bg-gray-300");
+            }
+            stepDiv.appendChild(line);
+          }
+
+          trackContainer.appendChild(stepDiv);
+        });
+
+        modalBox.appendChild(trackContainer);
+        modal.classList.remove("hidden"); // ✅ Show the modal
+      };
+
+      // Optional: Click outside to close
+      window.addEventListener("click", (e) => {
+        const modal = document.getElementById("trackModal");
+        if (e.target === modal) {
+          modal.classList.add("hidden");
+        }
+      });
+
+      // Toast auto remove
+      setTimeout(() => {
+        const toasts = document.querySelectorAll("#toast");
+        toasts.forEach((toast) => toast.remove());
+      }, 2000);
+    </script>
+  </body>
+</html>
