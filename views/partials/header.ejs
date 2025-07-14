@@ -3,8 +3,8 @@
 >
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
     <!-- Logo -->
-    <h1 class="text-2xl font-bold text-green-300">🍴 MealBook</h1>
 
+    <a href="/" class="text-2xl font-bold text-green-300">FoodieFlex</a>
     <!-- Desktop Navigation -->
     <nav class="hidden md:flex space-x-6 text-sm sm:text-base">
       <a href="/" class="hover:text-green-300">Home</a>
@@ -16,28 +16,21 @@
       <a href="/signup" class="hover:text-green-300">Signup</a>
       <% } else { %>
       <form method="POST" action="/auth/logout">
-        <button type="submit" class="hover:text-red-400">Logout</button>
+        <button type="submit" class="hover:text-red-400 cursor-pointer">
+          Logout
+        </button>
       </form>
       <% } %>
     </nav>
 
     <!-- Mobile Hamburger Button -->
     <div class="md:hidden">
-      <button id="menuToggleBtn" aria-label="Toggle Menu">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="text-white w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
+      <button
+        id="menuToggleBtn"
+        aria-label="Toggle Menu"
+        class="cursor-pointer"
+      >
+        <i class="fa-solid fa-bars"></i>
       </button>
     </div>
   </div>
@@ -69,7 +62,13 @@
     const mobileMenu = document.getElementById("mobileMenu");
 
     if (toggleBtn && mobileMenu) {
+      let isOpen = false;
+
       toggleBtn.addEventListener("click", () => {
+        isOpen = !isOpen;
+        toggleBtn.innerHTML = isOpen
+          ? `<i class="fa-solid fa-xmark"></i>`
+          : `<i class="fa-solid fa-bars"></i>`;
         mobileMenu.classList.toggle("hidden");
       });
     }

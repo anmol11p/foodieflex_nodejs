@@ -9,8 +9,15 @@ const loginController = async (req, res, next) => {
       req.flash("error", "User is not created");
       return res.redirect("/signup");
     }
+    if (userExist.password === null) {
+      req.flash(
+        "error",
+        "You've created account using social login.Plz login with your social account"
+      );
+      return res.redirect("/login");
+    }
     // check password is valid or not
-    const passwordValid = await argon2.verify(userExist.password, password); // ✅
+    const passwordValid = await argon2.verify(userExist.password, password);
     if (!passwordValid) {
       req.flash("error", "Invalid credentials");
       return res.redirect("/login");
@@ -76,7 +83,9 @@ const signUpController = async (req, res, next) => {
 const handleLogout = async (req, res, next) => {
   try {
     res.clearCookie("token");
-    req.flash("success", "user logout success");
+    res.clearCookie("google_code_verifier");
+    res.clearCookie("google_oauth_state");
+    req.flash("success", "You have been logged out.");
     return res.redirect("/");
   } catch (error) {
     next(error);

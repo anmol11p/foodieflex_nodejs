@@ -23,6 +23,7 @@ export const loginSchema = registrationSchema.pick({
   email: true,
   password: true,
 });
+
 export const userOrderSchema = z.object({
   items: z
     .array(
@@ -49,6 +50,15 @@ export const userOrderSchema = z.object({
       message: "Address must be at least 5 characters",
     }),
 });
+export const OAuthAccountSchema = z.object({
+  userId: z.string().min(1, "User ID is required").trim(),
+  provider: z.enum(["google", "github"]),
+  providerAccountId: z
+    .string()
+    .min(1, "Provider account ID is required")
+    .trim(),
+});
+
 export const itemZodSchema = z.object({
   itemName: z
     .string({ required_error: "Item name is required" })

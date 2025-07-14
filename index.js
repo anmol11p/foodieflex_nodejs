@@ -48,14 +48,21 @@ app.use("/auth", AuthRouter);
 app.use("/item", menuRouter);
 app.use("/book", bookingRouter);
 
+//  define errorPage
+app.use((req, res, next) => {
+  try {
+    res.render("404.ejs");
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.use(ErrorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server listening on port http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port http://localhost:${PORT}`);
+});
 
 export default app;

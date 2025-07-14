@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
     <link href="/styles/output.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <%- include("partials/header")%>
@@ -38,7 +45,6 @@
             <input
               type="text"
               name="email"
-              autoComplete="off"
               id="email"
               placeholder="you@example.com"
               class="w-full p-2 text-white bg-transparent border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-white"
@@ -74,6 +80,28 @@
               Register here
             </a>
           </p>
+          <!-- link to auth github,google -->
+          <div class="flex gap-3 flex-col items-center justify-center">
+            <span> Or login with</span>
+            <div class="flex items-center gap-5">
+              <!-- Google Button -->
+              <a
+                href="/google"
+                class="flex items-center justify-center border-gray-300 hover:bg-red-500 hover:text-white transition-all duration-100 rounded-full p-2 shadow-md"
+              >
+                <i class="fab fa-google"></i>
+              </a>
+
+              <!-- GitHub Button -->
+              <a
+                href="/github"
+                class="flex items-center justify-center border-gray-300 hover:bg-gray-500 hover:text-white transition-all duration-100 rounded-full p-2 shadow-md"
+              >
+                <i class="fab fa-github text-xl"></i>
+              </a>
+            </div>
+          </div>
+
           <% if (Array.isArray(errors) && errors.length > 0) { %>
           <div id="flash-container">
             <% errors.forEach((error) => { %>

@@ -12,12 +12,11 @@
     "dev": "node --env-file=.env --watch index.js",
     "build:css": "npx @tailwindcss/cli -i ./public/styles/input.css -o ./public/styles/output.css --watch"
   },
-  "engines": {
-    "node": ">=16.x"
-  },
   "dependencies": {
     "@tailwindcss/cli": "^4.1.11",
+    "arctic": "^3.7.0",
     "argon2": "^0.43.0",
+    "axios": "^1.10.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
